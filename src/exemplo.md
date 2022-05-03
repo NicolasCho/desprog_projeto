@@ -1,9 +1,6 @@
 Algoritmo de Rabin-Karp para Busca em Texto
 ======
 
-Subtítulo
----------
-
 O algoritmo de Rabin-Karp foi criado com intuito de encontrar uma substring em uma string.
 Normalmente utilizado em:
 
@@ -12,6 +9,11 @@ Normalmente utilizado em:
 * achar palavras em uma página web;
 
 * ferramentas de plágio;
+
+Sua eficiência
+---------
+Uma das vantagens do algoritmo é a sua eficiência em realizar múltiplas buscas simultaneamente. Além disso, ocupa menos espaço na **memória**, nesse requisito, o Rabin-Karp é melhor que os outro algoritmos do mesmo tipo. 
+
 
 e imagens. Lembre que todas as imagens devem estar em uma subpasta *img*.
 
@@ -62,12 +64,12 @@ Este é um exemplo de aviso, entre `md !!!`.
 !!!
 
 
-??? Exercício
+??? Exercício 
 
-Este é um exemplo de exercício, entre `md ???`.
-
+Por que a `md Força Bruta` é considerado uma `md Abordagem Ingênua`, ou seja, não é eficiente ao problema apresentado?
+E qual é a sua complexidade?
 ::: Gabarito
-Este é um exemplo de gabarito, entre `md :::`.
+Porque a `md Força Bruta` seria uma ideia bem demorada, ela percorreria a *string* inteira para encontrar a *substring* desejada. Portanto, obsevando o tamanho da *string* e da *substring*, a sua complexidade é *O(nm)*.
 :::
 
 ???
