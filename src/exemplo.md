@@ -1,22 +1,17 @@
-Título
+Algoritmo de Rabin-Karp para Busca em Texto
 ======
 
 Subtítulo
 ---------
 
-Para criar um parágrafo, basta escrever um texto contínuo, sem pular linhas.
+O algoritmo de Rabin-Karp foi criado com intuito de encontrar uma substring em uma string.
+Normalmente utilizado em:
 
-Você também pode criar
+* encontrar termos em um texto;
 
-1. listas;
+* achar palavras em uma página web;
 
-2. ordenadas,
-
-assim como
-
-* listas;
-
-* não-ordenadas
+* ferramentas de plágio;
 
 e imagens. Lembre que todas as imagens devem estar em uma subpasta *img*.
 
