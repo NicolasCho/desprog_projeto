@@ -15,6 +15,20 @@ Sua eficiência
 Uma das vantagens do algoritmo é a sua eficiência em realizar múltiplas buscas simultaneamente. Além disso, ocupa menos espaço na **memória**, nesse requisito, o Rabin-Karp é melhor que os outro algoritmos do mesmo tipo. 
 
 
+??? Exercício 
+
+Por que a `md Força Bruta` é considerado uma `md Abordagem Ingênua`, ou seja, não é eficiente ao problema apresentado?
+E qual é a sua complexidade?
+::: Gabarito
+Porque a `md Força Bruta` seria uma ideia bem demorada, ela percorreria a *string* inteira para encontrar a *substring* desejada. Portanto, obsevando o tamanho da *string* e da *substring*, a sua complexidade é *O(nm)*.
+:::
+
+???
+
+
+:brute_force 
+
+
 e imagens. Lembre que todas as imagens devem estar em uma subpasta *img*.
 
 ![](logo.png)
@@ -39,6 +53,8 @@ imagens estão. Essa pasta também deve estar em *img*.
 
 :bubble
 
+
+
 Você também pode inserir código, inclusive especificando a linguagem.
 
 ``` py
@@ -62,14 +78,3 @@ hello world
 !!! Aviso
 Este é um exemplo de aviso, entre `md !!!`.
 !!!
-
-
-??? Exercício 
-
-Por que a `md Força Bruta` é considerado uma `md Abordagem Ingênua`, ou seja, não é eficiente ao problema apresentado?
-E qual é a sua complexidade?
-::: Gabarito
-Porque a `md Força Bruta` seria uma ideia bem demorada, ela percorreria a *string* inteira para encontrar a *substring* desejada. Portanto, obsevando o tamanho da *string* e da *substring*, a sua complexidade é *O(nm)*.
-:::
-
-???
