@@ -10,36 +10,36 @@ Ideias inicias
 A primeira ideia que pode ter vindo em sua cabeça deve ter sido iterar sobre o **txt** de caractere em caractere para verificar se o **pattern** bate com alguma substring analisada. Vamos analisar um pouco essa solução.
 
 ??? Exercício 
-Escreva uma função **brute_force()** que recebe um **txt** e um **pattern** e, iterando sobre o txt, busca o pattern desejado.
-A função deve retornar o indice em que se encontra o pattern caso haja. Se não encontrar, retorna 0.
+Escreva uma função **brute_force()** que recebe uma string **txt** e uma string **pattern** e, iterando sobre o txt, busca o pattern desejado.
+A função deve retornar o indice em que se encontra o pattern caso exista. Se não encontrar, retorna -1. Considere que txt sempre será maior que pattern.
 
 *Dica*: Use a função **strlen()** para determinar tanto o tamanho do txt quanto do pattern.
 ::: Gabarito
 ``` c
-void brute_force(char* txt, char* pat){
+int brute_force(char* txt, char* pat){
     int n = strlen(txt);
     int m = strlen(pat);
  
     for (int i = 0; i <= n - m; i++) {
-        int j;
  
-        for (j = 0; j < m; j++){
+        for (int j = 0; j < m; j++){
             if (txt[i + j] != pat[j]){
                 break;
             }
         }
 
-        if (j == m)
+        if (j == m){
             return i;
+        }
     }
-    return 0;
+    return -1;
 }
 ```
 :::
 ???
 
 O método analisado pode ser considerado uma forma de força bruta. Essa abordagem ingênua resolve o problema, mas de fato não é 
-a forma mais elegante nem efetiva de abordar a questão.
+a forma mais elegante nem efetiva de resolver a questão.
 
 ??? Exercício 
 Estime a complexidade do algoritmo ingênuo de busca em texto descrito acima. Não é necessário cálculo, é possível identificar
@@ -58,44 +58,202 @@ Veja a animação a seguir com um exemplo do algoritmo descrito acima. Nela busc
 Melhorando
 ---------
 
-O algoritimo até que está funcionando, mas ainda temos como melhorar ele. Primeiro podemos ao inves de analasir caracter por carcter, é melhor transformar a sub-string em um número e então ir calculando o valor de um treho do texto e comparar os valores.
+Como dito anteriormente, o algoritimo até que funciona, mas não é muito eficiente. Vamos tentar uma abordagem diferente para identificar *matches* de substrings.
+No caso vamos atribuir um valor numérico para cada caractere e vamos considerar um *match* quando os dois valores numéricos concidirem.
 
-Ex: 'hallo' = 5
+Para tanto, um bom modo de fazer isto seria utilizando a tabela ascii.
+
+![](ascii.png)
+
+Então, se fossemos analisar uma palavra como "hello", teríamos:
+
+|     h    |     e    |     l    |     l    |     o    |
+|----------|----------|----------|----------|----------|
+|    104   |    101   |    108   |    108   |    111   |
+
+Agora que sabemos o valor numérico para cada caractere, devemos encontrar uma forma identificar *matches* entre as substrings e o **pattern**.
+
+Hashes
+--------
+
+Uma ideia inicial (e que você provavelmente deve ter pensado ao ver a tabela acima) para identificar os *matches* seria simplesmente somar os valores de cada caractere da palavra.
+
+E, de fato, iremos utilizar esta ideia para agilizar a busca, o **hashing**.
+
+Uma função de hashing funciona transformando os dados de uma determinada entrada em uma saída de tamanho fixo, aplicando operações lógicas ou matemáticas. No caso,
+se somarmos todos os caracteres de "hello" obteríamos 532, que seria a saída da função de hash aplicada sobre a palavra:
+
+$$hash_{sum}(hello) = 532$$
 
 ??? Exercício
-Qual é o problema de calcular um novo valor paracada trecho do texto?
+Reescreva o algoritmo de força bruta feito anteriormente, agora identificando matches por meio dos valores numéricos.
 
+*Dica*: Apesar da tabela ascii ter sido mencionada anteriormente, não é preciso fazer nenhuma transformação dos caracteres. Operações aritméticas com caracteres
+já serão consideradas utilizando os valores da tabela ascii.
+
+!!! Aviso
+O que o exercício busca é a forma mais intuitiva de reescrever a abordagem da força bruta. Mas talvez você já tenha notado uma ideia que iremos abordar na próxima sessão.
+!!!
 ::: Gabarito
-Se nós simplesmente calcularmas um novo número paracada trecho possivel a complexidade do algoritimo permanece **O(nm)**.
+``` c
+int brute_force_numerico(char* txt, char* pat){
+    int n = strlen(txt);
+    int m = strlen(pat);
+    int pat_hash = 0;
+
+    for (int k = 0; k < m ; k++){
+        pat_hash += pat[k];
+    }
+    
+    int txt_hash;
+    for (int i = 0; i <= n - m; i++) {
+        txt_hash = 0;
+
+        for (int j = 0; j < m; j++){
+            txt_hash += txt[i+j]; 
+        }
+
+        if (pat_hash == txt_hash){
+            return i;
+        }
+    }
+    return -1;
+}
+```
 :::
 ???
 
-Então como resolver esse problema? Basta usar os valores que já foram cálculados para realizar o achar o valor do prõximo trecho o que faz o algoritimo ficar com a complexidade de **O(n)** na maioria dos casos.
+Sim. Parece que ficou pior.
 
-O algoritmo de Rabin-Karp foi criado com intuito de encontrar uma substring em uma string.
-Normalmente utilizado em:
+E de fato ficou.
 
-* encontrar termos em um texto;
 
-* achar palavras em uma página web;
+??? Exercício
+Qual é o problema de calcular um novo valor para cada trecho do texto?
 
-* ferramentas de plágio;
+::: Gabarito
+Se nós simplesmente calcularmos um novo número para cada trecho possivel a complexidade do algoritimo permanece **O(nm)**. 
 
-Sua eficiência
+Aliás, no algoritmo da força bruta original, parávamos de testar a substring caso encontrássemos um caractere em txt que não correspondesse ao pattern. No algoritmo que 
+acabamos de implementar, calculamos o valor numérico percorrendo a substring inteira, podendo resultar em performance pior do que o algoritmo original.
+:::
+???
+
+Então como resolver esse problema? 
+
+Basta usar os valores de hash que já foram calculados para determinar o valor de hash do próximo trecho. Isto faz com que o algoritimo
+fique com a complexidade de **O(n)** na maioria dos casos.
+
+Rolling Hashes
+----------
+
+A ideia de utilizar valores de hashes anteriores para calcular novos hashes é abordada no conceito de Rolling Hashes. É mais fácil relacionar esta ideia a um hash que se move
+de maneira contínua sobre o **txt**, não perdendo tempo, ou processamento, para avaliar caracteres que já foram analisados.
+
+Como mencionado anteriormente, talvez você já tenha percebido como fazer isso no exercício de antes. 
+
+Se estamos utilizando a soma dos caracteres como uma função de hash, então para calcular o hash da substring seguinte, que apenas anda um espaço para direita (remove o 
+caractere mais a esquerda e adiciona um caractere mais a direita), basta subtrair do hash anterior o valor numérico do caractere mais a esquerda da substring anterior e somar o
+valor do novo caractere mais a direita.
+
+A animação seguinte facilita entender esta ideia.
+
+**Animação legal**
+
+A busca em texto utilizando-se de rolling hashes para identificar matches é conhecida como **Algoritmo de Rabin-Karp**.
+
+??? Exercício
+Implemente o algoritmo de Rabin-Karp utilizando a soma dos caracteres como rolling hash.
+
+::: Gabarito
+``` c
+int rabin_karp_sum(char* txt, char* pat){
+    int n = strlen(txt);
+    int m = strlen(pat);
+    int pat_hash = 0;
+    int txt_hash = 0;
+
+    for (int k = 0; k < m ; k++){
+        pat_hash += pat[k];
+        txt_hash += txt[k];
+    }
+    
+    for (int i = 0; i <= n - m; i++) {
+        if(pat_hash == txt_hash){
+            return i;
+        }
+        txt_hash = txt_hash - txt[i] + txt[i+m];
+    }
+    return -1;
+}
+```
+:::
+???
+
+Uma das vantagens do algoritmo é a sua eficiência em realizar múltiplas buscas simultaneamente. Além disso, ocupa menos espaço de **memória** uma vez que não precisa de 
+estruturas auxiliares para aramazenar dados, se comparado a outros algoritmos do tipo.
+
+Colisões
 ---------
-Uma das vantagens do algoritmo é a sua eficiência em realizar múltiplas buscas simultaneamente. Além disso, ocupa menos espaço na **memória**, nesse requisito, o Rabin-Karp é melhor que os outro algoritmos do mesmo tipo. 
+Anteriormente havíamos mencionado que o uso do rolling hash "faz com que o algoritimo fique com a complexidade de **O(n)** na maioria dos casos". Pense um pouco no porquê
+mencionarmos "na maioria dos casos".
 
+O título da sessão entrega a resposta. Em funções de hash, colisões ocorrem quando duas entradas possuem a mesma saída. Sendo assim, é possível que em um **txt** haja duas ou 
+mais substrings que possuem o mesmo valor de saída e que esse valor de saída seja um *match* com o valor de **pattern**.
 
-??? Exercício 
+Logo, o algoritmo feito na sessão anterior pode devolver um valor errado caso encontre uma substring com mesmo valor de hash que o pattern, mas os caracteres da substring não
+coincidem com o pattern devido a ocorrência de colisão.
 
-Por que a `md Força Bruta` é considerado uma `md Abordagem Ingênua`, ou seja, não é eficiente ao problema apresentado?
-E qual é a sua complexidade?
+O exemplo abaixo mostra uma colisão utilizando o hash de somatória que estamos implementando.
+
+**EXEMPLO SHOW**
+
+??? Exercício
+Com base no algoritmo implementado anteriormente, adicione uma forma de verificar colisões.
+!!! Aviso
+Sim, a performance do algoritmo vai piorar.
+!!!
+
 ::: Gabarito
-Porque a `md Força Bruta` seria uma ideia bem demorada, ela percorreria a *string* inteira para encontrar a *substring* desejada. Portanto, obsevando o tamanho da *string* e da *substring*, a sua complexidade é *O(nm)*.
-:::
+A única forma de termos certeza de que encontramos a substring desejada é verificando se os caracteres das substrings que deram *match* coincidem com o pattern. 
 
+``` c
+int rabin_karp_sum(char* txt, char* pat){
+    int n = strlen(txt);
+    int m = strlen(pat);
+    int pat_hash = 0;
+    int txt_hash = 0;
+
+    for (int k = 0; k < m ; k++){
+        pat_hash += pat[k];
+        txt_hash += txt[k];
+    }
+    
+    for (int i = 0; i <= n - m; i++) {
+        if(pat_hash == txt_hash){
+            for(int j = 0; j < m; j++){
+                if(pat[j] != txt[i+j]){
+                    break;
+                }
+            }
+            if(j == m){
+                return i;
+            }
+        }
+        txt_hash = txt_hash - txt[i] + txt[i+m];
+    }
+    return -1;
+}
+```
+:::
 ???
 
+**FALAR SOBRE A IMPORTÂNCIA DE UM BOM HASH E MÉTODO MONTE CARLO E LAS VEGAS**
+
+**DESAFIO É IMPLEMENTAR COM HASH MODULAR**
+
+APAGAR
+--------
 
 e imagens. Lembre que todas as imagens devem estar em uma subpasta *img*.
 
