@@ -156,9 +156,9 @@ Se estamos utilizando a soma dos caracteres como uma função de hash, então pa
 caractere mais a esquerda e adiciona um caractere mais a direita), basta subtrair do hash anterior o valor numérico do caractere mais a esquerda da substring anterior e somar o
 valor do novo caractere mais a direita.
 
-A animação seguinte facilita entender esta ideia.
+A animação seguinte facilita entender esta ideia. Nela buscamos o pattern "vai" que tem como hash o valor de 320.
 
-**Animação legal**
+:rolling_hash
 
 A busca em texto utilizando-se de rolling hashes para identificar matches é conhecida como **Algoritmo de Rabin-Karp**.
 
@@ -218,7 +218,7 @@ Ex: Hash(roma) = Hash(amor) = 431
 ??? Exercício
 Com base no algoritmo implementado anteriormente, adicione uma forma de verificar colisões.
 !!! Aviso
-Sim, a performance do algoritmo vai piorar.
+A performance do algoritmo vai piorar.
 !!!
 
 ::: Gabarito
@@ -269,7 +269,8 @@ Indo além
 --------
 
 A função de hash mais popular no algoritmo de Rabin-Karp é o Hashing modular. Ela é um pouco mais elaborada do que a que
-utilizamos no handout, mas é boa suficiente para assumir a versão de Monte Carlo de forma confiável.
+utilizamos no handout e é boa suficiente para assumir a versão de Monte Carlo de forma confiável.
+
 Se quiser saber mais sobre essa função veja a sessão "Função de hashing modular" do seguinte link:
 
 [https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/st-hash.html](https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/st-hash.html)
