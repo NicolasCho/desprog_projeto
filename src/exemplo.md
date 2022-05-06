@@ -201,12 +201,19 @@ mencionarmos "na maioria dos casos".
 O título da sessão entrega a resposta. Em funções de hash, colisões ocorrem quando duas entradas possuem a mesma saída. Sendo assim, é possível que em um **txt** haja duas ou 
 mais substrings que possuem o mesmo valor de saída e que esse valor de saída seja um *match* com o valor de **pattern**.
 
-Logo, o algoritmo feito na sessão anterior pode devolver um valor errado caso encontre uma substring com mesmo valor de hash que o pattern, mas os caracteres da substring não
-coincidem com o pattern devido a ocorrência de colisão.
+Logo, o algoritmo feito na sessão anterior pode devolver um valor errado caso encontre uma substring com mesmo valor de hash que
+o pattern, mas os caracteres da substring não coincidem com o pattern devido a ocorrência de colisão.
 
-O exemplo abaixo mostra uma colisão utilizando o hash de somatória que estamos implementando.
+??? Reflexão
+Sabendo que estamos utilizando a somatória dos caracteres com função de hashing, quais tipos de palavras que resultariam em 
+colisões?
 
-**EXEMPLO SHOW**
+::: Gabarito
+Palíndromos ou anagramas.
+
+Ex: Hash(roma) = Hash(amor) = 431
+:::
+???
 
 ??? Exercício
 Com base no algoritmo implementado anteriormente, adicione uma forma de verificar colisões.
@@ -248,59 +255,21 @@ int rabin_karp_sum(char* txt, char* pat){
 :::
 ???
 
-**FALAR SOBRE A IMPORTÂNCIA DE UM BOM HASH E MÉTODO MONTE CARLO E LAS VEGAS**
+Na verdade, o exercício que acabamos de resolver é a versão **Las Vegas** do algoritmo. Nesta versão, ao encontrar uma *match*
+entre os **pat_hash** e **txt_hash**, devemos verificar de fato se a substring corresponde ao pattern desejado, corrigindo 
+problemas de colisões. A versão que fizemos na sessão anterior (que considera o primeiro *match* já como problema resolvido) é 
+considerada a versão **Monte Carlo** do algoritmo. 
 
-**DESAFIO É IMPLEMENTAR COM HASH MODULAR**
+A versão Monte Carlo não necessariamente tem um desempenho ruim, no sentido de resolver o problema. Ela *aposta* que está 
+resolvido, pois espera que haja uma baixa probabilidade de ocorrer colisões. 
 
-APAGAR
+Para que isso seja verdade, precisamos utilizar um rolling hash bom o suficiente que reduza ao máximo a chance de colisão.
+
+Indo além
 --------
 
-e imagens. Lembre que todas as imagens devem estar em uma subpasta *img*.
+A função de hash mais popular no algoritmo de Rabin-Karp é o Hashing modular. Ela é um pouco mais elaborada do que a que
+utilizamos no handout, mas é boa suficiente para assumir a versão de Monte Carlo de forma confiável.
+Se quiser saber mais sobre essa função veja a sessão "Função de hashing modular" do seguinte link:
 
-![](logo.png)
-
-Para tabelas, usa-se a [notação do
-MultiMarkdown](https://fletcher.github.io/MultiMarkdown-6/syntax/tables.html),
-que é muito flexível. Vale a pena abrir esse link para saber todas as
-possibilidades.
-
-| coluna a | coluna b |
-|----------|----------|
-| 1        | 2        |
-
-Ao longo de um texto, você pode usar *itálico*, **negrito**, {red}(vermelho) e
-[[tecla]]. Também pode usar uma equação LaTeX: $f(n) \leq g(n)$. Se for muito
-grande, você pode isolá-la em um parágrafo.
-
-$$\lim_{n \rightarrow \infty} \frac{f(n)}{g(n)} \leq 1$$
-
-Para inserir uma animação, use `md :` seguido do nome de uma pasta onde as
-imagens estão. Essa pasta também deve estar em *img*.
-
-:bubble
-
-
-
-Você também pode inserir código, inclusive especificando a linguagem.
-
-``` py
-def f():
-    print('hello world')
-```
-
-``` c
-void f() {
-    printf("hello world\n");
-}
-```
-
-Se não especificar nenhuma, o código fica com colorização de terminal.
-
-```
-hello world
-```
-
-
-!!! Aviso
-Este é um exemplo de aviso, entre `md !!!`.
-!!!
+[https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/st-hash.html](https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/st-hash.html)
