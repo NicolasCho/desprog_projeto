@@ -3,20 +3,31 @@ Algoritmo de Rabin-Karp para Busca em Texto
 
 Imagine que temos um texto (que vamos considerar uma string [**txt**]) e que nela queremos buscar um determinado termo (que vamos
 nos referir a substring, ou padrão [**pattern**]). Isso pode ser necessário para alguns casos que vemos no cotidiano, 
-como encontrar palavras em uma página web (famoso ctrl+f) ou determinar plágios.
+como encontrar palavras em uma página web (famoso ctrl+f) ou determinar plágios. Vejamos um exemplo em pequena escala.
+
+Dentro do **txt**: *"oi como vai"*,  como faríamos para encontrar a palavra (**pattern**): *"vai"* ?
+
+No caso, como consideramos uma string um *array* de chars, estamos querendo o índice de **txt** em que se encontra a palavra
+*"vai"*, se ela existir:
+
+![](exemplo_inicial.png)
+
+Visualmente, é fácil enxergar que *"vai"* se encontra no índice 9 de **txt**, mas como faríamos para máquina encontrá-la?    
 
 Ideias inicias
 ---------
-A primeira ideia que pode ter vindo em sua cabeça deve ter sido iterar sobre o **txt** de caractere em caractere para verificar se o **pattern** bate com alguma substring analisada. Vamos analisar um pouco essa solução.
+A primeira ideia que pode ter vindo em sua cabeça deve ter sido iterar sobre o **txt** de caractere em caractere para verificar se o **pattern** bate com alguma substring analisada. 
 
-??? Exercício 
-Escreva uma função **brute_force()** que recebe uma string **txt** e uma string **pattern** e, iterando sobre o txt, busca o pattern desejado.
-A função deve retornar o indice em que se encontra o pattern caso exista. Se não encontrar, retorna -1. Considere que txt sempre será maior que pattern.
+Assim, começando do índice 0 de **txt**, verificamos se o caractere que está neste índice bate com o caractere inicial de nosso
+**pattern**. Se coincidir, verificamos se o caractere do índice 1 de **txt** bate com o segundo caractere de **pattern** e assim 
+por diante. Se alguma verificação falhar, quer dizer que a palavra não se encontra no índice 0, e assim repetimos esse processo
+para o índice seguinte até encontrarmos a palavra (ou não, caso ela não existir no texto).
 
-*Dica*: Use a função **strlen()** para determinar tanto o tamanho do txt quanto do pattern.
-::: Gabarito
+O código abaixo descreve a ideia mencionada.
+
 ``` c
 int brute_force(char* txt, char* pat){
+    //A função strlen() retorna o tamanho da string
     int n = strlen(txt);
     int m = strlen(pat);
  
@@ -35,14 +46,15 @@ int brute_force(char* txt, char* pat){
     return -1;
 }
 ```
-:::
-???
+Veja a animação a seguir com um exemplo do algoritmo descrito. Nela buscamos uma substring **"BAB"** no texto dado.
 
-O método analisado pode ser considerado uma forma de força bruta. Essa abordagem ingênua resolve o problema, mas de fato não é 
+:brute_force 
+
+O método analisado pode ser considerado uma forma de **força bruta**. Essa abordagem ingênua resolve o problema, mas de fato não é 
 a forma mais elegante nem efetiva de resolver a questão.
 
 ??? Exercício 
-Estime a complexidade do algoritmo ingênuo de busca em texto descrito acima. Não é necessário cálculo, é possível identificar
+Estime a complexidade do algoritmo ingênuo de força bruta descrito acima. **Não é necessário cálculo**. É possível estimar
 a complexidade de maneira intuitiva ao analisar o algoritmo.
 
 ::: Gabarito
@@ -51,17 +63,16 @@ do txt *m* vezes para verificar se a substring bate o desejado. Assim é fácil 
 :::
 ???
 
-Veja a animação a seguir com um exemplo do algoritmo descrito acima. Nela buscamos uma substring **"BAB"** no texto dado.
-
-:brute_force 
-
 Melhorando
 ---------
 
 Como dito anteriormente, o algoritimo até que funciona, mas não é muito eficiente. Vamos tentar uma abordagem diferente para identificar *matches* de substrings.
-No caso vamos atribuir um valor numérico para cada caractere e vamos considerar um *match* quando os dois valores numéricos concidirem.
 
-Para tanto, um bom modo de fazer isto seria utilizando a tabela ascii.
+O problema do método a força bruta apresentado é que ele itera pelas substrings de txt toda vez que precisamos compará-las com o 
+pattern. Se conseguirmos extrair alguma espécie de valor que serve de identidade ou *impressão digital* para cada substring e 
+pattern, talvez o processo de comparação seja mais rápido. 
+
+Um bom modo de fazer isto seria utilizando a tabela ascii.
 
 ![](ascii.png)
 
@@ -71,30 +82,45 @@ Então, se fossemos analisar uma palavra como "hello", teríamos:
 |----------|----------|----------|----------|----------|
 |    104   |    101   |    108   |    108   |    111   |
 
-Agora que sabemos o valor numérico para cada caractere, devemos encontrar uma forma identificar *matches* entre as substrings e o **pattern**.
+Agora que sabemos o valor numérico para cada caractere, uma das formas de definir a suposta *impressão digital* da palavra
+"hello" seria, por exemplo, somar todos os valores. Assim, "hello" poderia ser resumida por um valor numérico de 532.
 
 Hashes
 --------
 
-Uma ideia inicial (e que você provavelmente deve ter pensado ao ver a tabela acima) para identificar os *matches* seria simplesmente somar os valores de cada caractere da palavra.
-
-E, de fato, iremos utilizar esta ideia para agilizar a busca, o **hashing**.
+O que fizemos na sessão anterior, ao somar os valores de todos os caracteres, descreve uma função de **hash** (apesar de
+bem simples).
 
 Uma função de hashing funciona transformando os dados de uma determinada entrada em uma saída de tamanho fixo, aplicando operações lógicas ou matemáticas. No caso,
 se somarmos todos os caracteres de "hello" obteríamos 532, que seria a saída da função de hash aplicada sobre a palavra:
 
 $$hash_{sum}(hello) = 532$$
 
-??? Exercício
-Reescreva o algoritmo de força bruta feito anteriormente, agora identificando matches por meio dos valores numéricos.
+Vamos agora aplicar essa ideia do hash de somatória para o algoritmo de força bruta que havíamos feito e tentar identificar
+melhoras. No caso, se compararmos o hash, a *impressão digital*, do pattern com o hash da substring de txt analisada e eles
+forem iguais, então vamos assumir que encontramos a palavra.
 
-*Dica*: Apesar da tabela ascii ter sido mencionada anteriormente, não é preciso fazer nenhuma transformação dos caracteres. Operações aritméticas com caracteres
-já serão consideradas utilizando os valores da tabela ascii.
+Primeiro precisamos calcular o hash do **pattern**:
 
-!!! Aviso
-O que o exercício busca é a forma mais intuitiva de reescrever a abordagem da força bruta. Mas talvez você já tenha notado uma ideia que iremos abordar na próxima sessão.
-!!!
-::: Gabarito
+``` c
+
+int brute_force_numerico(char* txt, char* pat){
+    int n = strlen(txt);
+    int m = strlen(pat);
+    int pat_hash = 0;
+
+    for (int k = 0; k < m ; k++){
+            pat_hash += pat[k];
+        }
+
+    ...
+```
+
+Em seguida, precisamos calcular o valor de hash para cada substring em **txt** e verificar se o valor corresponde ao 
+valor do **hash de pattern**. 
+
+O código final deve ficar da seguinte forma portanto:
+
 ``` c
 int brute_force_numerico(char* txt, char* pat){
     int n = strlen(txt);
@@ -120,19 +146,16 @@ int brute_force_numerico(char* txt, char* pat){
     return -1;
 }
 ```
-:::
-???
 
 Sim. Parece que ficou pior.
 
 E de fato ficou.
 
-
 ??? Exercício
 Qual é o problema de calcular um novo valor para cada trecho do texto?
 
 ::: Gabarito
-Se nós simplesmente calcularmos um novo número para cada trecho possivel a complexidade do algoritimo permanece **O(nm)**. 
+Se nós simplesmente iterarmos pela substring para calcularmos um novo número em cada trecho possível a complexidade do algoritimo permanece **O(nm)**. 
 
 Aliás, no algoritmo da força bruta original, parávamos de testar a substring caso encontrássemos um caractere em txt que não correspondesse ao pattern. No algoritmo que 
 acabamos de implementar, calculamos o valor numérico percorrendo a substring inteira, podendo resultar em performance pior do que o algoritmo original.
@@ -141,8 +164,55 @@ acabamos de implementar, calculamos o valor numérico percorrendo a substring in
 
 Então como resolver esse problema? 
 
-Basta usar os valores de hash que já foram calculados para determinar o valor de hash do próximo trecho. Isto faz com que o algoritimo
-fique com a complexidade de **O(n)** na maioria dos casos.
+Vamos analisar o que o algoritmo acima faz para o exemplo do começo do handout, ou seja, para o **txt** *"oi como vai"* e o 
+**pattern** *"vai"*.
+
+![](exemplo_inicial.png)
+
+Vamos supor o momento em que o algoritmo está analisando a substring que começa no índice 8 de **txt**.
+
+Obs: Na figura abaixo, os números embaixo de cada caractere representam seu valor numérico da tabela ascii.
+
+![](antes.png)
+
+O algoritmo então compara **247** com **320** e percebe que não são iguais e parte para o próximo índice, o 9.
+
+![](depois.png)
+
+As operaçõs realizadas pelo algoritmo nos dois momentos da imagem foram:
+
+$$ (1):32 + 118 + 97 = 247$$
+
+$$ (2):118 + 97 + 105 = 320$$
+
+Se fossemos escrever de forma genérica:
+
+![](generico.png)
+
+$$ (1):a + b + c = y$$
+
+$$ (2):b + c + d = x$$
+
+Em que *y* é o valor de hash da substring que se inicia no índice 8 de **txt** e *x* é o hash da substring que se inicia
+no índice 9.
+
+??? Exercício
+Encontre uma relação de *x* que dependa de *y* a partir das equações acima. O que podemos concluir portanto?
+
+::: Gabarito
+A partir de (1) temos:
+
+$$ (1):b + c = y - a$$
+
+Substituindo b + c em (2):
+
+$$ (2):y - a + d = x$$
+
+Logo, podemos concluir que para calcular o valor de hash da substring seguinte **não precisamos iterar sobre ela**, podemos apenas
+pegar o valor do hash anterior (*d*) e subtrair o valor do caractere do índice anterior analisado (*a*). Em seguida, basta somar
+o valor do último caractere da substring analisada atualmente (*e*).
+:::
+???
 
 Rolling Hashes
 ----------
@@ -150,13 +220,7 @@ Rolling Hashes
 A ideia de utilizar valores de hashes anteriores para calcular novos hashes é abordada no conceito de Rolling Hashes. É mais fácil relacionar esta ideia a um hash que se move
 de maneira contínua sobre o **txt**, não perdendo tempo, ou processamento, para avaliar caracteres que já foram analisados.
 
-Como mencionado anteriormente, talvez você já tenha percebido como fazer isso no exercício de antes. 
-
-Se estamos utilizando a soma dos caracteres como uma função de hash, então para calcular o hash da substring seguinte, que apenas anda um espaço para direita (remove o 
-caractere mais a esquerda e adiciona um caractere mais a direita), basta subtrair do hash anterior o valor numérico do caractere mais a esquerda da substring anterior e somar o
-valor do novo caractere mais a direita.
-
-A animação seguinte facilita entender esta ideia. Nela buscamos o pattern "vai" que tem como hash o valor de 320.
+A animação seguinte facilita entender esta ideia mencionada no exercício anterior: de não precisar iterar sobre a substring. Nela buscamos o pattern "vai" que tem como hash o valor de 320.
 
 :rolling_hash
 
