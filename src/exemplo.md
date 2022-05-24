@@ -257,6 +257,19 @@ int rabin_karp_sum(char* txt, char* pat){
 Uma das vantagens do algoritmo é a sua eficiência em realizar múltiplas buscas simultaneamente. Além disso, ocupa menos espaço de **memória** uma vez que não precisa de 
 estruturas auxiliares para aramazenar dados, se comparado a outros algoritmos do tipo.
 
+??? Reflexão
+Agora faça o hashing das palavras **roma** e **amor**.
+
+::: Gabarito
+Hash(roma) = Hash(amor) = 431
+
+Palíndromos ou anagramas, são exemplos onde a soma do hash é igual. Isso se chama colisão. 
+
+Inclusive o nosso método de soma é um dos piores possíveis, onde existe vários outras formas de calcular o hashing
+para reduzir as colisões.
+:::
+???
+
 Colisões
 ---------
 Anteriormente havíamos mencionado que o uso do rolling hash "faz com que o algoritimo fique com a complexidade de **O(n)** na maioria dos casos". Pense um pouco no porquê
@@ -268,16 +281,6 @@ mais substrings que possuem o mesmo valor de saída e que esse valor de saída s
 Logo, o algoritmo feito na sessão anterior pode devolver um valor errado caso encontre uma substring com mesmo valor de hash que
 o pattern, mas os caracteres da substring não coincidem com o pattern devido a ocorrência de colisão.
 
-??? Reflexão
-Sabendo que estamos utilizando a somatória dos caracteres com função de hashing, quais tipos de palavras que resultariam em 
-colisões?
-
-::: Gabarito
-Palíndromos ou anagramas.
-
-Ex: Hash(roma) = Hash(amor) = 431
-:::
-???
 
 ??? Exercício
 Com base no algoritmo implementado anteriormente, adicione uma forma de verificar colisões.
