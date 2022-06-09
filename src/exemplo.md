@@ -235,6 +235,19 @@ A busca em texto utilizando-se de rolling hashes para identificar matches é con
 Uma das vantagens do algoritmo é a sua eficiência em realizar múltiplas buscas simultaneamente. Além disso, ocupa menos espaço de **memória** uma vez que não precisa de 
 estruturas auxiliares para aramazenar dados, se comparado a outros algoritmos do tipo.
 
+??? Reflexão
+Agora faça o hashing das palavras **roma** e **amor**.
+
+::: Gabarito
+Hash(roma) = Hash(amor) = 431
+
+Palíndromos ou anagramas, são exemplos onde a soma do hash é igual. Isso se chama colisão. 
+
+Inclusive o nosso método de soma é um dos piores possíveis, onde existe vários outras formas de calcular o hashing
+para reduzir as colisões.
+:::
+???
+
 Colisões
 ---------
 Anteriormente havíamos mencionado que o uso do rolling hash "faz com que o algoritimo fique com a complexidade de **O(n)** na maioria dos casos". Pense um pouco no porquê mencionarmos "na maioria dos casos".
