@@ -23,7 +23,7 @@ Assim, começando do índice 0 de **txt**, verificamos se o caractere que está 
 por diante. Se alguma verificação falhar, quer dizer que a palavra não se encontra no índice 0, e assim repetimos esse processo
 para o índice seguinte até encontrarmos a palavra (ou não, caso ela não existir no texto).
 
-O código abaixo descreve a ideia mencionada.
+O código abaixo descreve a ideia mencionada, considerando um **txt** de tamanho *n* e um **pattern** de tamanho *m*.
 
 ``` c
 int brute_force(char* txt, char* pat){
@@ -50,16 +50,14 @@ Veja a animação a seguir com um exemplo do algoritmo descrito. Nela buscamos u
 
 :brute_force 
 
-O método analisado pode ser considerado uma forma de **força bruta**. Essa abordagem ingênua resolve o problema, mas de fato não é 
-a forma mais elegante nem efetiva de resolver a questão.
+O método analisado pode ser considerado uma forma de **força bruta**. Essa abordagem ingênua resolve o problema, mas de fato não é a forma mais elegante nem efetiva de resolver a questão.
 
 ??? Exercício 
-Estime a complexidade do algoritmo ingênuo de força bruta descrito acima. **Não é necessário cálculo**. É possível estimar
-a complexidade de maneira intuitiva ao analisar o algoritmo.
+Estime a complexidade do algoritmo ingênuo de força bruta descrito acima, considerando  **txt** de tamanho *n* e um **pattern** de tamanho *n*. **Não é necessário cálculo**. É possível estimar a complexidade de maneira intuitiva ao analisar o algoritmo.
 
 ::: Gabarito
 Considerando o tamanho de txt como *n* e o tamanho do pattern como *m*, no pior dos casos, teríamos que iterar para cada caractere
-do txt *m* vezes para verificar se a substring bate o desejado. Assim é fácil ver que sua complexidade é de **O(nm**).
+do txt *m* vezes para verificar se a substring bate com o desejado. Assim é fácil ver que sua complexidade é de **O(nm)**.
 :::
 ???
 
@@ -76,14 +74,20 @@ Um bom modo de fazer isto seria utilizando a tabela ascii.
 
 ![](ascii.png)
 
-Então, se fossemos analisar uma palavra como "hello", teríamos:
+No caso, uma forma de definir a suposta *impressão digital* de uma palavra seria, por exemplo, somar todos os valores numéricos
+associados a cada caractere da palavra.
 
+??? Exercício 
+Agora, utilizando a tabela ascii, faça o hash de somatória de "hello".
+
+::: Gabarito
 |     h    |     e    |     l    |     l    |     o    |
 |----------|----------|----------|----------|----------|
 |    104   |    101   |    108   |    108   |    111   |
 
-Agora que sabemos o valor numérico para cada caractere, uma das formas de definir a suposta *impressão digital* da palavra
-"hello" seria, por exemplo, somar todos os valores. Assim, "hello" poderia ser resumida por um valor numérico de 532.
+Assim, "hello" poderia ser resumida por um valor numérico de 532.
+:::
+???
 
 Hashes
 --------
@@ -100,7 +104,11 @@ Vamos agora aplicar essa ideia do hash de somatória para o algoritmo de força 
 melhoras. No caso, se compararmos o hash, a *impressão digital*, do pattern com o hash da substring de txt analisada e eles
 forem iguais, então vamos assumir que encontramos a palavra.
 
-Primeiro precisamos calcular o hash do **pattern**:
+A animação a seguir demonstra a implementação dessa ideia para um **pattern** "vai" para um **txt** "oi como vai".
+
+:hash_simplificado
+
+Agora, tendo uma primeira noção do que fazer vamos implementar essa ideia em código. Primeiro precisamos calcular o hash do **pattern**:
 
 ``` c
 
@@ -147,12 +155,9 @@ int brute_force_numerico(char* txt, char* pat){
 }
 ```
 
-Sim. Parece que ficou pior.
-
-E de fato ficou.
-
 ??? Exercício
-Qual é o problema de calcular um novo valor para cada trecho do texto?
+Analisando o código acima, complexidade do algoritmo melhorou? Se não, qual é o problema de calcular um novo valor para cada 
+trecho do texto?
 
 ::: Gabarito
 Se nós simplesmente iterarmos pela substring para calcularmos um novo número em cada trecho possível a complexidade do algoritimo permanece **O(nm)**. 
@@ -171,7 +176,7 @@ Vamos analisar o que o algoritmo acima faz para o exemplo do começo do handout,
 
 Vamos supor o momento em que o algoritmo está analisando a substring que começa no índice 8 de **txt**.
 
-Obs: Na figura abaixo, os números embaixo de cada caractere representam seu valor numérico da tabela ascii.
+Obs: Nas figuras abaixo, os números embaixo de cada caractere representam seu valor numérico da tabela ascii.
 
 ![](antes.png)
 
@@ -179,7 +184,7 @@ O algoritmo então compara **247** com **320** e percebe que não são iguais e 
 
 ![](depois.png)
 
-As operaçõs realizadas pelo algoritmo nos dois momentos da imagem foram:
+As operaçõs realizadas pelo algoritmo nos dois momentos de cada imagem foram:
 
 $$ (1):32 + 118 + 97 = 247$$
 
@@ -209,8 +214,8 @@ Substituindo b + c em (2):
 $$ (2):y - a + d = x$$
 
 Logo, podemos concluir que para calcular o valor de hash da substring seguinte **não precisamos iterar sobre ela**, podemos apenas
-pegar o valor do hash anterior (*d*) e subtrair o valor do caractere do índice anterior analisado (*a*). Em seguida, basta somar
-o valor do último caractere da substring analisada atualmente (*e*).
+pegar o valor do hash anterior (*y*) e subtrair o valor do caractere do índice anterior analisado (*a*). Em seguida, basta somar
+o valor do último caractere da substring analisada atualmente (*d*).
 :::
 ???
 
@@ -218,7 +223,8 @@ Rolling Hashes
 ----------
 
 A ideia de utilizar valores de hashes anteriores para calcular novos hashes é abordada no conceito de Rolling Hashes. É mais fácil relacionar esta ideia a um hash que se move
-de maneira contínua sobre o **txt**, não perdendo tempo, ou processamento, para avaliar caracteres que já foram analisados.
+de maneira contínua sobre o **txt**, não perdendo tempo, ou processamento, para avaliar caracteres que já foram analisados. Assim,
+a **verificiação de uma substring é realizada em tempo constante**.
 
 A animação seguinte facilita entender esta ideia mencionada no exercício anterior: de não precisar iterar sobre a substring. Nela buscamos o pattern "vai" que tem como hash o valor de 320.
 
@@ -226,68 +232,101 @@ A animação seguinte facilita entender esta ideia mencionada no exercício ante
 
 A busca em texto utilizando-se de rolling hashes para identificar matches é conhecida como **Algoritmo de Rabin-Karp**.
 
-??? Exercício
-Implemente o algoritmo de Rabin-Karp utilizando a soma dos caracteres como rolling hash.
-
-::: Gabarito
-``` c
-int rabin_karp_sum(char* txt, char* pat){
-    int n = strlen(txt);
-    int m = strlen(pat);
-    int pat_hash = 0;
-    int txt_hash = 0;
-
-    for (int k = 0; k < m ; k++){
-        pat_hash += pat[k];
-        txt_hash += txt[k];
-    }
-    
-    for (int i = 0; i <= n - m; i++) {
-        if(pat_hash == txt_hash){
-            return i;
-        }
-        txt_hash = txt_hash - txt[i] + txt[i+m];
-    }
-    return -1;
-}
-```
-:::
-???
-
 Uma das vantagens do algoritmo é a sua eficiência em realizar múltiplas buscas simultaneamente. Além disso, ocupa menos espaço de **memória** uma vez que não precisa de 
 estruturas auxiliares para aramazenar dados, se comparado a outros algoritmos do tipo.
 
 Colisões
 ---------
-Anteriormente havíamos mencionado que o uso do rolling hash "faz com que o algoritimo fique com a complexidade de **O(n)** na maioria dos casos". Pense um pouco no porquê
-mencionarmos "na maioria dos casos".
+Anteriormente havíamos mencionado que o uso do rolling hash "faz com que o algoritimo fique com a complexidade de **O(n)** na maioria dos casos". Pense um pouco no porquê mencionarmos "na maioria dos casos".
+
+??? Reflexão
+Utilizando a somatória dos caracteres com função de hashing, calcule o hash das palavras "cura" e "cats".
+
+::: Gabarito
+|     c    |     u    |     r    |     a    |   
+|----------|----------|----------|----------|
+|    99    |    117   |    114   |    97    |
+
+
+|     c    |     a    |     t    |     s    |   
+|----------|----------|----------|----------|
+|    99    |    97    |    116   |    115   |    
+
+
+Ex: Hash(cura) = Hash(cats) = 427
+:::
+???
 
 O título da sessão entrega a resposta. Em funções de hash, colisões ocorrem quando duas entradas possuem a mesma saída. Sendo assim, é possível que em um **txt** haja duas ou 
 mais substrings que possuem o mesmo valor de saída e que esse valor de saída seja um *match* com o valor de **pattern**.
 
-Logo, o algoritmo feito na sessão anterior pode devolver um valor errado caso encontre uma substring com mesmo valor de hash que
-o pattern, mas os caracteres da substring não coincidem com o pattern devido a ocorrência de colisão.
+Logo, o algoritmo feito na sessão anterior irá devolver um valor caso encontre uma substring com mesmo valor de hash que
+o pattern, mas os caracteres da substring podem não coincidir com o pattern devido a ocorrência de colisão.
 
-??? Reflexão
-Sabendo que estamos utilizando a somatória dos caracteres com função de hashing, quais tipos de palavras que resultariam em 
-colisões?
+??? Exercício
+Com base no algoritmo de Rabin-Karp (utilizando rolling-hashes), como poderíamos fazer para garantir que o algoritmo devolverá
+uma resposta certa.
 
 ::: Gabarito
-Palíndromos ou anagramas.
-
-Ex: Hash(roma) = Hash(amor) = 431
+A única forma de termos certeza de que encontramos a substring desejada é verificando se os caracteres das substrings que deram *match* realmente coincidem com o pattern. Ou seja, devemos iterar uma vez pela subtring para termos certeza.
 :::
 ???
 
-??? Exercício
-Com base no algoritmo implementado anteriormente, adicione uma forma de verificar colisões.
-!!! Aviso
-A performance do algoritmo vai piorar.
-!!!
+??? Análise
+Qual seria a complexidade do algoritmo *no pior caso* se implementássemos a solução descrita acima.
 
 ::: Gabarito
-A única forma de termos certeza de que encontramos a substring desejada é verificando se os caracteres das substrings que deram *match* coincidem com o pattern. 
+No pior caso, todas as subtrings testadas resultariam em colisão. Assim, o algoritmo teria que iterar sobre todas as subtrings
+para verificar se a palavra de fato coincide com o **pattern** desejado. Como o **pat** tem tamanho *m* então as subtrsings
+também terão tamnho *m*. Logo, se o **txt** tem tamanho *n*, então a complexidade no pior caso é **O(nm)**
+:::
+???
 
+Então quer dizer que foi tudo à toa?
+
+Não necessariamente.
+
+De fato, no pior dos casos, haveria colisão em todas as subtrings e a complexidade seria a mesma da força bruta. Mas o ganho
+do algoritmo vem na apliacação prática, onde podemos considerar que o evento de uma colisão ocorrer tenha uma probabilidade
+muito baixa e, como resultado, o algoritmo raramente irá verificar respostas erradas.
+
+No caso que analisamos durante o handout, utilizamos o hash de somatória ao longo dos exercícios, mas na verdade ele é um 
+hash considerado fraco, pois sua simplicidade não é muito efetiva contra colisões, resultando em mais verificações. Na 
+prática são utilizadas funções de hash mais elaboradas (como o hash modular, mostrado no final do handout) que resultam 
+em menos falos positivos.
+
+Na verdade, a solução que acabamos de implementar (verificar cada *match*) é considerada a versão **Las Vegas** do algoritmo. 
+
+??? Exercício
+E se ignorássemos as verificações de subtring e aceitássemos o primeiro *match* que aparecer? Qual seria a complexidade
+do algoritmo no pior caso?
+
+::: Gabarito
+Como mencionado na sessão de **Rolling Hashes**, cada verificação de substring é realizada em tempo constante. Se 
+ignorássemos a verificação de *matches* e aceitássemos a primeira solução encontrada, o algoritmo não precisaria iterar
+nenhuma vez sobre as substrings. No pior dos casos, a substring correspondente ao **pat** se encontraria no final de **txt**
+e, portanto, teríamos que percorrer o texto inteiro. Como a verificação é constante, a complexidade no pior caso é **O(n)**
+:::
+???
+
+O exercício acima considera a versão **Monte Carlo** do algoritmo.
+
+Esta versão não necessariamente tem um desempenho ruim, no sentido de resolver o problema. Ela *aposta* que está 
+resolvido, pois espera que haja uma baixa probabilidade de ocorrer colisões, como mencionado anteriormente (ainda mais
+utilizando uma boa funçao de hash) 
+
+Indo além
+--------
+Se você já acabou, segue alguns exercícios e leituras extras!
+
+---
+
+Implementação
+--------
+??? Exercício
+Implemente o algoritmo de Rabin-Karp utilizando a soma dos caracteres como rolling hash e com verificação de colisões.
+
+::: Gabarito
 ``` c
 int rabin_karp_sum(char* txt, char* pat){
     int n = strlen(txt);
@@ -316,25 +355,32 @@ int rabin_karp_sum(char* txt, char* pat){
     return -1;
 }
 ```
+
 :::
 ???
 
-Na verdade, o exercício que acabamos de resolver é a versão **Las Vegas** do algoritmo. Nesta versão, ao encontrar uma *match*
-entre os **pat_hash** e **txt_hash**, devemos verificar de fato se a substring corresponde ao pattern desejado, corrigindo 
-problemas de colisões. A versão que fizemos na sessão anterior (que considera o primeiro *match* já como problema resolvido) é 
-considerada a versão **Monte Carlo** do algoritmo. 
 
-A versão Monte Carlo não necessariamente tem um desempenho ruim, no sentido de resolver o problema. Ela *aposta* que está 
-resolvido, pois espera que haja uma baixa probabilidade de ocorrer colisões. 
-
-Para que isso seja verdade, precisamos utilizar um rolling hash bom o suficiente que reduza ao máximo a chance de colisão.
-
-Indo além
+Hash modular
 --------
 
 A função de hash mais popular no algoritmo de Rabin-Karp é o Hashing modular. Ela é um pouco mais elaborada do que a que
 utilizamos no handout e é boa suficiente para assumir a versão de Monte Carlo de forma confiável.
 
+Em suma, o hash modular utiliza o resto da divisão dos valores numéricos ascii. No caso de strings, o hash será iterado
+sobre os caracteres (Rolling Hash). O valor acumulado para uma substring pode ser simplificado pelo seguinte pseudocódigo.
+
+``` c
+// baseado em https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/st-hash.html
+hash = 0
+ENQUANTO indice < tamanho_pattern:
+    hash = (hash + prox_caractere) % Primo
+```
+O valor de **Primo** é um número primo arbitrário (de preferência grande). 
+
 Se quiser saber mais sobre essa função veja a sessão "Função de hashing modular" do seguinte link:
 
 [https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/st-hash.html](https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/st-hash.html)
+
+Se quiser ver a implementação desse hash no algoritmo de Rabin-Karp:
+
+[https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/rabin-karp.html](https://www.ime.usp.br/~pf/estruturas-de-dados/aulas/rabin-karp.html)
